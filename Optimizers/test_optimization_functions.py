@@ -18,3 +18,31 @@ class Beale:
     def eval(self, x, y):
         z = np.log(1+(1.5-x+x*y)**2 + (2.25-x+x*y**2)**2 + (2.625-x+x*y**3)**2)/10
         return z
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+class Booth:
+    def __init__(self):
+        self.x_min, self.x_max = -5, 7
+        self.y_min, self.y_max = -5, 7
+        self.start_x, self.start_y = -4.1, 4.3
+        self.x_optimum, self.y_optimum, self.z_optimum = 1, 3, 0
+        self._compute_derivatives()
+        
+    def _compute_derivatives(self)
+        self.dz_dx = grad(self.eval, 0)
+        self.dz_dy = grad(self.eval, 1)
+        
+    def eval(self, x, y):
+        # minimum at (1, 3)
+        z = (x + 2*y - 7)**2 +(2*x + y - 5)**2
+        return z
