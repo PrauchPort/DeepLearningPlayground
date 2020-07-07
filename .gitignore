@@ -1,3 +1,5 @@
 /Faster RCNN/Dataset/**/*
 /GAN_mnist/*
 /**/*-checkpoint.ipynb
+/**/*.jpg
+/legacy/Faster RCNN_legacy/Dataset/**/*
