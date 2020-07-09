@@ -73,7 +73,7 @@ class ResNet(keras.Model):
 def main():
     num_classes = 10
     batch_size = 32
-    epochs = 4
+    epochs = 15
 
     model = ResNet(32, num_classes)
     model.compile(optimizer=keras.optimizers.Adam(0.001),
@@ -84,6 +84,8 @@ def main():
     model.summary()
     model.fit(x_train, y_train_ohe, batch_size=batch_size, epochs=epochs,
               validation_data=(x_test, y_test_ohe), verbose=1)
+
+    model.save(r'C:\Users\Wojtek\Documents\Projects\DeepLearningPlayground\Resnet\model', save_format='tf')
 
     scores = model.evaluate(x_test, y_test_ohe, batch_size, verbose=1)
     print("Final test loss and accuracy :", scores)
