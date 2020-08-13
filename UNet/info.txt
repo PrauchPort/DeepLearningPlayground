@@ -1,0 +1,1 @@
+https://github.com/NVIDIA/DeepLearningExamples/tree/master/TensorFlow2/Segmentation/UNet_Medical/model

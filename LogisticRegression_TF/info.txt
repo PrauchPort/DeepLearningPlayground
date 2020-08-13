@@ -1,0 +1,1 @@
+https://builtin.com/data-science/guide-logistic-regression-tensorflow-20
