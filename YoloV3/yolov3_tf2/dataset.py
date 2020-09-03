@@ -106,3 +106,62 @@ IMAGE_FEATURE_MAP = {
     # 'image/object/truncated': tf.io.VarLenFeature(tf.int64),
     # 'image/object/view': tf.io.VarLenFeature(tf.string),
 }
+
+
+def parse_tfrecord(tfrecord, class_table, size):
+
+    x = tf.io.parse_single_example(tfrecord, IMAGE_FEATURE_MAP)
+
+    x_train = tf.image.decode_jpeg(x['image/encoded'], channels=3)
+    x_train = tf.image.resize(x_train, (size, size))
+
+    class_text = tf.sparse.to_dense(
+        x['image/object/class/text'], default_value=''
+    )
+
+    labels = tf.cast(class_table.lookup(class_test), tf.float32)
+
+    y_train = tf.stack([tf.sparse.to_dense(x['image/object/bbox/xmin']),
+                        tf.sparse.to_dense(x['image/object/bbox/ymin']),
+                        tf.sparse.to_dense(x['image/object/bbox/xmax']),
+                        tf.sparse.to_dense(x['image/object/bbox/ymax']),
+                        labels
+                        ], axis=1)
+
+    paddings = [[0, FLAGS.yolo_max_boxes - tf.shape(y_train)[0]], [0, 0]]
+    y_train = tf.pad(y_train, paddings)
+
+    return x_train, y_train
+
+
+def load_tfrecord_dataset(file_pattern, class_file, size=416):
+
+    LINE_NUMBER = -1
+    class_table = tf.lookup.StaticHashTable(tf.lookup.TextFileInitializer(
+        class_file, tf.string, 0, tf.int64, LINE_NUMBER, delimiter='\n'
+    ), -1)
+
+    files = tf.data.Dataset.list_files(file_pattern)
+
+    dataset = files.flat_map(tf.data.TFRecordDataset)
+
+    return dataset.map(lambda x: parse_tfrecord(x, class_table, size))
+
+
+def load_fake_dataset():
+
+    x_train = tf.image.decode_jpeg(
+        open('./data/girl.png', 'rb').read(), channels=3
+    )
+
+    x_train = tf.expand_dims(x_train, axis=0)
+
+    labels = [
+        [0.18494931, 0.03049111, 0.9435849,  0.96302897, 0],
+        [0.01586703, 0.35938117, 0.17582396, 0.6069674, 56],
+        [0.09158827, 0.48252046, 0.26967454, 0.6403017, 67]
+    ] + [[0, 0, 0, 0, 0]] * 5
+    y_train = tf.convert_to_tensor(labels, tf.float32)
+    y_train = tf.expand_dims(y_train, axis=0)
+
+    return tf.data.Dataset.from_tensor_slices((x_train, y_train))
